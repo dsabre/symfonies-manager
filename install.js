@@ -1,12 +1,14 @@
-const inquirer    = require('inquirer');
-const os          = require("os");
-const fs          = require("fs");
-const envFilepath = '.env';
-const dbFilepath  = 'db.json';
+const inquirer            = require('inquirer');
+const os                  = require("os");
+const fs                  = require("fs");
+const envFilepath         = '.env';
+const dbFilepath          = 'db.json';
+const {execSync}          = require("child_process");
+const symfonyMajorVersion = parseInt(execSync('symfony -V |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"').toString().trim().match(/(\d+\.\d+\.\d+)/)[1].trim().split('.')[0].trim());
 
 const defaults = {
 	PORT:            3999,
-	PROXY_FILE_PATH: `/home/${os.userInfo().username}/.symfony5/proxy.json`,
+	PROXY_FILE_PATH: `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
 	START_PROXY:     true
 };
 
