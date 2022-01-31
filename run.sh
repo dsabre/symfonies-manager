@@ -1,8 +1,9 @@
 #!/bin/bash
 
+# set log file
 LOG=/tmp/symfonies_manager_log
 
-echo "Last run: $(date)" > $LOG
+echo "Symfonies manager started at: $(date)" > $LOG
 
 # using nvm maybe the path must be set to PATH variable
 NODE_VERSION=$(find /home/"$(whoami)"/.nvm/versions/node -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \; |tail -n1)
