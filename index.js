@@ -6,7 +6,7 @@ const jsonServer       = require('json-server');
 const {execSync, exec} = require("child_process");
 const fs               = require("fs");
 const server           = jsonServer.create();
-const router           = jsonServer.router(process.env.DB);
+const router           = jsonServer.router('db.json');
 const middlewares      = jsonServer.defaults();
 const serverUrl        = `http://localhost:${process.env.PORT}`;
 
