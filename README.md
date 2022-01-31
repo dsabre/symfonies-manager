@@ -8,6 +8,7 @@ Controll all of your local Symfonies from here!
 Clone or download this repository, then from command line run this:
 
 ```bash
+cd symfonies-manager
 ./run.sh
 ```
 
