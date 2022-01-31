@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# using nvm maybe the path must be set to PATH variable
 NODE_VERSION=$(find /home/"$(whoami)"/.nvm/versions/node -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \; |tail -n1)
 export PATH=$PATH:/home/dsabre/.nvm/versions/node/"$NODE_VERSION"/bin
 
