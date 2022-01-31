@@ -3,24 +3,15 @@
 Controll all of your local Symfonies from here!
 
 
-## Installation
+## Installation and usage
 
 Clone or download this repository, then from command line run this:
 
 ```bash
-cd symfonies-manager
-yarn install
-```
-Then you can run the following command, respond to all of questions:
-
-```bash
-npm run install
+./run.sh
 ```
 
-
-## Usage
-
-Simply go to http://localhost:3999 (if you have changed the port with the command above then you must se the correct here)
+Then simply go to http://localhost:3999 (if you have changed the port with the command above then you must se the correct port here)
 
 
 ## Contributing
