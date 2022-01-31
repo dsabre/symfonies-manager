@@ -1,8 +1,7 @@
-const prompt      = require('prompt');
-const os          = require('os');
-const fs          = require('fs');
+const inquirer    = require('inquirer');
+const os          = require("os");
+const fs          = require("fs");
 const envFilepath = '.env';
-const dbFilepath  = 'db.json';
 
 const defaults = {
 	PORT:            3999,
@@ -19,36 +18,39 @@ if (fs.existsSync(envFilepath)) {
 	defaults.START_PROXY     = process.env.START_PROXY.trim() === 'true';
 }
 
-const schema = {
-	properties: {
-		PORT:            {
-			description: 'Port where Symfonies manager will run on',
-			type:        'integer',
-			pattern:     /^[\d]+$/,
-			message:     'Port must be a number',
-			default:     defaults.PORT,
-			required:    true
+const questions = [
+	{
+		type:    'input',
+		name:    'PORT',
+		message: 'Port where Symfonies manager will run on:',
+		default: defaults.PORT,
+		validate(value) {
+			if ((value + '').match(/^[\d]+$/)) {
+				return true;
+			}
+			
+			return 'Please enter a valid port number';
 		},
-		PROXY_FILE_PATH: {
-			description: 'Absolute path of your Symfony proxy.json file',
-			type:        'string',
-			default:     defaults.PROXY_FILE_PATH,
-			required:    true
-		},
-		START_PROXY:     {
-			description: 'Do you want to start Symfony proxy automatically on this manager start?',
-			type:        'boolean',
-			default:     defaults.START_PROXY
-		}
+	},
+	{
+		type:    'input',
+		name:    'PROXY_FILE_PATH',
+		message: 'Absolute path of your Symfony proxy.json file:',
+		default: defaults.PROXY_FILE_PATH
+	},
+	{
+		type:    'confirm',
+		name:    'START_PROXY',
+		message: 'Do you want to start Symfony proxy automatically on this manager start?',
+		default: defaults.START_PROXY,
 	}
-};
+];
 
-prompt.start();
-prompt.get(schema, (err, result) => {
+inquirer.prompt(questions).then(answers => {
 	const config = [];
 	
-	Object.keys(result).forEach(key => {
-		config.push([key, result[key]].join('='));
+	Object.keys(answers).forEach(key => {
+		config.push([key, answers[key]].join('='));
 	});
 	
 	fs.writeFileSync(envFilepath, config.join('\n'));
