@@ -1,0 +1,35 @@
+{
+  "symfonies": [
+    {
+      "symfony": "vodafone.app",
+      "shortcuts": [
+        "/simula",
+        "/mgm/sms"
+      ],
+      "useHttps": false,
+      "favourite": true,
+      "id": 1
+    },
+    {
+      "symfony": "bper.pilota-2020",
+      "shortcuts": [],
+      "useHttps": false,
+      "favourite": false,
+      "id": 2
+    },
+    {
+      "symfony": "philip-morris.openinsieme",
+      "shortcuts": [],
+      "useHttps": false,
+      "favourite": true,
+      "id": 3
+    },
+    {
+      "symfony": "vodafone.next-cc",
+      "useHttps": false,
+      "favourite": false,
+      "shortcuts": [],
+      "id": 4
+    }
+  ]
+}
