@@ -1,7 +1,7 @@
 const fs          = require("fs");
 const envFilepath = '.env';
 const dbFilepath  = 'db.json';
-let hasErrors = false;
+let hasErrors     = false;
 
 if (!fs.existsSync(envFilepath)) {
 	console.error(`ERROR: ${envFilepath} file not found, probably you must run "npm run install" before`);
