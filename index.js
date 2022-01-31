@@ -1,12 +1,30 @@
+const fs          = require("fs");
+const envFilepath = '.env';
+const dbFilepath  = 'db.json';
+let hasErrors = false;
+
+if (!fs.existsSync(envFilepath)) {
+	console.error(`ERROR: ${envFilepath} file not found, probably you must run "npm run install" before`);
+	hasErrors = true;
+}
+
+if (!fs.existsSync(dbFilepath)) {
+	console.error(`ERROR: ${dbFilepath} file not found, probably you must run "npm run install" before`);
+	hasErrors = true;
+}
+
+if (hasErrors) {
+	process.exit(1);
+}
+
 // load .env config file
 require('dotenv').config();
 
 const _                = require('lodash');
 const jsonServer       = require('json-server');
 const {execSync, exec} = require("child_process");
-const fs               = require("fs");
 const server           = jsonServer.create();
-const router           = jsonServer.router('db.json');
+const router           = jsonServer.router(dbFilepath);
 const middlewares      = jsonServer.defaults();
 const serverUrl        = `http://localhost:${process.env.PORT}`;
 
