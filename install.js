@@ -2,7 +2,7 @@ const prompt      = require('prompt');
 const os          = require('os');
 const fs          = require('fs');
 const envFilepath = '.env';
-const dbFilepath = 'db.json';
+const dbFilepath  = 'db.json';
 
 const defaults = {
 	PORT:            3999,
