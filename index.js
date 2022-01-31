@@ -3,16 +3,19 @@ const envFilepath = '.env';
 const dbFilepath  = 'db.json';
 let hasErrors     = false;
 
+// check if env file is present
 if (!fs.existsSync(envFilepath)) {
 	console.error(`ERROR: ${envFilepath} file not found, probably you must run "npm run install" before`);
 	hasErrors = true;
 }
 
+// check if database file is present
 if (!fs.existsSync(dbFilepath)) {
 	console.error(`ERROR: ${dbFilepath} file not found, probably you must run "npm run install" before`);
 	hasErrors = true;
 }
 
+// lock on errors
 if (hasErrors) {
 	process.exit(1);
 }
@@ -38,15 +41,17 @@ if (process.env.START_PROXY.trim() === 'true') {
 	});
 }
 
+// start json server
 server.listen(process.env.PORT, () => {
 	console.log(`JSON Server is running on ${serverUrl}`);
 });
 
 router.render = (req, res) => {
 	if (req.method === 'GET' && req._parsedOriginalUrl.pathname === '/symfonies') {
+		// LIST SYMFONIES ACTION
+		
 		const symfonyProxy = JSON.parse(fs.readFileSync(process.env.PROXY_FILE_PATH, "utf8"));
 		
-		// LIST SYMFONIES
 		res.locals.data = Object.keys(symfonyProxy.domains).map(symfony => {
 			const saved          = _.find(res.locals.data, {symfony: symfony});
 			const useHttps       = saved ? saved.useHttps : false;
@@ -82,12 +87,16 @@ router.render = (req, res) => {
 			};
 		});
 	} else if (req.method === 'GET' && /^\/execSync\/.+$/.test(req._parsedOriginalUrl.pathname)) {
+		// EXEC SYNC ACTION
+		
 		const command = Buffer.from(req._parsedOriginalUrl.pathname.split('/')[2].trim(), 'base64').toString('ascii').trim();
 		
 		execSync(command);
 		
 		res.statusCode = 200;
 	} else if (req.method === 'GET' && /^\/exec\/.+$/.test(req._parsedOriginalUrl.pathname)) {
+		// EXEC NOT SYNC ACTION
+		
 		const command = Buffer.from(req._parsedOriginalUrl.pathname.split('/')[2].trim(), 'base64').toString('ascii').trim();
 		
 		exec(command);

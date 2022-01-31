@@ -21,6 +21,7 @@ if (fs.existsSync(envFilepath)) {
 	defaults.START_PROXY     = process.env.START_PROXY.trim() === 'true';
 }
 
+// prepare questions
 const questions = [
 	{
 		type:    'input',
@@ -56,8 +57,10 @@ inquirer.prompt(questions).then(answers => {
 		config.push([key, answers[key]].join('='));
 	});
 	
+	// write .env file
 	fs.writeFileSync(envFilepath, config.join('\n'));
 	
+	// initialize db if not exists
 	if (!fs.existsSync(dbFilepath)) {
 		fs.writeFileSync(dbFilepath, JSON.stringify({symfonies: []}));
 	}
