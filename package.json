@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
+    "install": "node install.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +14,7 @@
   "dependencies": {
     "dotenv": "^14.3.2",
     "json-server": "^0.17.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "prompt": "^1.2.1"
   }
 }

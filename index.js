@@ -14,7 +14,7 @@ server.use(middlewares);
 server.use(router);
 
 // start symfony proxy if required
-if (parseInt(process.env.START_PROXY.trim()) === 1) {
+if (process.env.START_PROXY.trim() === 'true') {
 	exec("symfony proxy:start", (error, stdout, stderr) => {
 		console.log(stdout);
 	});
