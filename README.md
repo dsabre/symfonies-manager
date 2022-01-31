@@ -41,4 +41,4 @@ For contributions, issues and feature requests please check [issues page](https:
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://raw.githubusercontent.com/dsabre/symfonies-manager/main/LICENSE)
