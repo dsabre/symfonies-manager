@@ -28,7 +28,9 @@ const jsonServer       = require('json-server');
 const {execSync, exec} = require("child_process");
 const server           = jsonServer.create();
 const router           = jsonServer.router(dbFilepath);
-const middlewares      = jsonServer.defaults();
+const middlewares      = jsonServer.defaults({
+	logger: false
+});
 const serverUrl        = `http://localhost:${process.env.PORT}`;
 
 server.use(middlewares);
@@ -36,14 +38,14 @@ server.use(router);
 
 // start symfony proxy if required
 if (process.env.START_PROXY.trim() === 'true') {
-	exec("symfony proxy:start", (error, stdout, stderr) => {
-		console.log(stdout);
+	exec("symfony proxy:start |sed -r \"s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g\"", (error, stdout, stderr) => {
+		console.log(`${(new Date()).toISOString()} - ${stdout.trim()}`);
 	});
 }
 
 // start json server
 server.listen(process.env.PORT, () => {
-	console.log(`JSON Server is running on ${serverUrl}`);
+	console.log(`${(new Date()).toISOString()} - JSON Server is running on ${serverUrl}`);
 });
 
 router.render = (req, res) => {
@@ -103,6 +105,8 @@ router.render = (req, res) => {
 		
 		res.statusCode = 200;
 	}
+	
+	console.log(`${(new Date()).toISOString()} - ${req.method} ${req.url} - ${res.statusCode}`);
 	
 	res.jsonp(res.locals.data);
 }

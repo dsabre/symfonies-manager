@@ -7,7 +7,7 @@ const {execSync}          = require("child_process");
 const symfonyMajorVersion = parseInt(execSync('symfony -V |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"').toString().trim().match(/(\d+\.\d+\.\d+)/)[1].trim().split('.')[0].trim());
 
 const defaults = {
-	PORT:            3999,
+	PORT:            7079,
 	PROXY_FILE_PATH: `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
 	START_PROXY:     true
 };
