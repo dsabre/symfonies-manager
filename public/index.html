@@ -102,7 +102,7 @@
 					<td class="text-center">
 						<a v-show="!symfony.running"
 						   href="#"
-						   class="btn btn-sm btn-success"
+						   class="btn btn-sm btn-success shadow-none"
 						   @click="runCommand(symfony, 'start', $event)"
 						   data-tooltip="true"
 						   data-bs-placement="left"
@@ -111,7 +111,8 @@
 							<i class="fas fa-play"></i>
 						</a>
 						<a v-show="symfony.running"
-						   href="#" class="btn btn-sm btn-warning"
+						   href="#"
+						   class="btn btn-sm btn-warning shadow-none"
 						   @click="runCommand(symfony, 'stop', $event)"
 						   data-tooltip="true"
 						   data-bs-placement="top"
@@ -119,9 +120,18 @@
 						>
 							<i class="fas fa-stop"></i>
 						</a>
+						<a href="#"
+						   class="btn btn-sm btn-secondary shadow-none"
+						   data-tooltip="true"
+						   data-bs-placement="top"
+						   :title="`Https ${symfony.useHttps ? 'enabled, click to disable it' : 'disabled, click to enable it'}`"
+						   @click="toggleHttps(symfony, $event)"
+						>
+							<i :class="{'fas fa-shield-alt': true, 'text-warning': !symfony.useHttps, 'text-info': symfony.useHttps}"></i>
+						</a>
 						<a v-show="!symfony.running"
 						   href="#"
-						   class="btn btn-sm btn-danger"
+						   class="btn btn-sm btn-danger shadow-none"
 						   data-bs-toggle="modal"
 						   data-bs-target="#deleteSymfonyModal"
 						   @click="deleteSymfonyInfo = symfony"
@@ -383,12 +393,12 @@
 						this.sortSymfonies();
 
 						// enable tooltips
-						setTimeout(() => {
-							const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
-							tooltipTriggerList.map(function (tooltipTriggerEl) {
-								return new bootstrap.Tooltip(tooltipTriggerEl);
-							});
-						}, 1000);
+						// setTimeout(() => {
+						// 	const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
+						// 	tooltipTriggerList.map(function (tooltipTriggerEl) {
+						// 		return new bootstrap.Tooltip(tooltipTriggerEl);
+						// 	});
+						// }, 1000);
 					}
 				}
 				xmlHttp.open("GET", '/symfonies', true);
@@ -543,6 +553,42 @@
 				xhr.open("PUT", `/symfonies/${this.deleteShortcutInfo.symfony.id}`);
 				xhr.setRequestHeader("Content-Type", "application/json");
 				xhr.send(data);
+			},
+			toggleHttps:     function (symfony, event) {
+				event.preventDefault();
+
+				const xhr           = new XMLHttpRequest();
+				xhr.withCredentials = true;
+
+				xhr.addEventListener("readystatechange", () => {
+					if (xhr.readyState === 4) {
+						this.load();
+					}
+				});
+
+				if (symfony.id === 0) {
+					const data = JSON.stringify({
+						symfony:   symfony.symfony,
+						shortcuts: [],
+						useHttps:  true,
+						favourite: false
+					});
+
+					xhr.open("POST", "/symfonies");
+					xhr.setRequestHeader("Content-Type", "application/json");
+					xhr.send(data);
+				} else {
+					const data = JSON.stringify({
+						symfony:   symfony.symfony,
+						useHttps:  !symfony.useHttps,
+						favourite: symfony.favourite,
+						shortcuts: symfony.shortcuts
+					});
+
+					xhr.open("PUT", `/symfonies/${symfony.id}`);
+					xhr.setRequestHeader("Content-Type", "application/json");
+					xhr.send(data);
+				}
 			}
 		}
 	})
