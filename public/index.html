@@ -10,6 +10,12 @@
 		  integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
 		  crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
+	<style>
+		.cursor-pointer{
+			cursor: pointer;
+		}
+	</style>
+
 	<title>Symfonies manager</title>
 </head>
 <body class="bg-dark">
@@ -96,7 +102,15 @@
 						</a>
 					</td>
 					<td class="text-center">
-						<span v-show="symfony.running" class="badge rounded-pill bg-success">PID: {{symfony.pid}}</span>
+						<span v-show="symfony.running"
+							  class="badge rounded-pill bg-success cursor-pointer"
+							  @click="navigator.clipboard.writeText(symfony.pid)"
+							  data-tooltip="true"
+							  data-bs-placement="top"
+							  title="Click to copy PID to clipboard"
+						>
+							PID: {{symfony.pid}}
+						</span>
 						<i v-show="!symfony.running" class="fas fa-times-circle text-secondary"></i>
 					</td>
 					<td class="text-center">
