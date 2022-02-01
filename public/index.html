@@ -46,12 +46,18 @@
 					</li>
 				</ul>
 				<div class="d-flex">
-					<input class="form-control"
-						   type="search"
-						   placeholder="Search"
-						   aria-label="Search"
-						   v-model="search"
-					>
+					<div class="input-group flex-nowrap">
+						<input type="search"
+							   class="form-control border-0 shadow-none"
+							   placeholder="Search"
+							   aria-label="Search"
+							   aria-describedby="addon-wrapping"
+							   v-model="search"
+						>
+						<span class="input-group-text bg-white text-secondary border-0" id="addon-wrapping">
+							<i class="fas fa-search"></i>
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -98,12 +104,18 @@
 						   href="#"
 						   class="btn btn-sm btn-success"
 						   @click="runCommand(symfony, 'start', $event)"
+						   data-tooltip="true"
+						   data-bs-placement="left"
+						   :title="`Start ${symfony.symfony}`"
 						>
 							<i class="fas fa-play"></i>
 						</a>
 						<a v-show="symfony.running"
 						   href="#" class="btn btn-sm btn-warning"
 						   @click="runCommand(symfony, 'stop', $event)"
+						   data-tooltip="true"
+						   data-bs-placement="top"
+						   :title="`Stop ${symfony.symfony}`"
 						>
 							<i class="fas fa-stop"></i>
 						</a>
@@ -113,6 +125,9 @@
 						   data-bs-toggle="modal"
 						   data-bs-target="#deleteSymfonyModal"
 						   @click="deleteSymfonyInfo = symfony"
+						   data-tooltip="true"
+						   data-bs-placement="right"
+						   :title="`Detach ${symfony.symfony}`"
 						>
 							<i class="fas fa-trash"></i>
 						</a>
@@ -173,21 +188,21 @@
 						</div>
 
 						<div class="mb-3">
-							<label for="addSymfonyName" class="form-label d-none">Name</label>
+							<label for="addSymfonyName" class="form-label d-none">Name *</label>
 							<input type="text"
 								   class="form-control form-control-lg"
 								   id="addSymfonyName"
-								   placeholder="Name"
+								   placeholder="Name *"
 								   v-model="addSymfonyInfo.name"
 								   required
 							>
 						</div>
 						<div class="mb-3">
-							<label for="addSymfonyPath" class="form-label d-none">Absolute path</label>
+							<label for="addSymfonyPath" class="form-label d-none">Absolute path *</label>
 							<input type="text"
 								   class="form-control form-control-lg"
 								   id="addSymfonyPath"
-								   placeholder="Absolute path"
+								   placeholder="Absolute path *"
 								   v-model="addSymfonyInfo.path"
 								   required
 							>
@@ -223,11 +238,11 @@
 				<form @submit="addShortcut">
 					<div class="modal-body">
 						<div class="mb-3">
-							<label for="shortcut" class="form-label d-none">Shortcut</label>
+							<label for="shortcut" class="form-label d-none">Shortcut *</label>
 							<input type="text"
 								   class="form-control form-control-lg"
 								   id="shortcut"
-								   placeholder="Shortcut"
+								   placeholder="Shortcut *"
 								   v-model="addShortcutInfo.shortcut"
 								   required
 							>
@@ -241,7 +256,10 @@
 						>
 							Cancel
 						</button>
-						<button type="submit" class="btn btn-primary">Add shortcut</button>
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-plus-circle"></i>
+							Add shortcut
+						</button>
 					</div>
 				</form>
 			</div>
@@ -258,7 +276,7 @@
 				</div>
 				<form v-if="deleteSymfonyInfo" @submit="deleteSymfony">
 					<div class="modal-body">
-						Delete symfony <b>{{deleteSymfonyInfo.symfony}}</b>?
+						Confirm <b>{{deleteSymfonyInfo.symfony}}</b> symfony deletion?
 					</div>
 					<div class="modal-footer">
 						<button type="button"
@@ -269,7 +287,8 @@
 							Cancel
 						</button>
 						<button type="submit" class="btn btn-danger">
-							Delete symfony
+							<i class="fas fa-trash"></i>
+							Yes, delete it
 						</button>
 					</div>
 				</form>
@@ -298,7 +317,10 @@
 						>
 							Cancel
 						</button>
-						<button type="submit" class="btn btn-danger">Delete shortcut</button>
+						<button type="submit" class="btn btn-danger">
+							<i class="fas fa-times-circle"></i>
+							Yes, delete it
+						</button>
 					</div>
 				</form>
 			</div>
@@ -359,6 +381,14 @@
 							return s;
 						});
 						this.sortSymfonies();
+
+						// enable tooltips
+						setTimeout(() => {
+							const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
+							tooltipTriggerList.map(function (tooltipTriggerEl) {
+								return new bootstrap.Tooltip(tooltipTriggerEl);
+							});
+						}, 1000);
 					}
 				}
 				xmlHttp.open("GET", '/symfonies', true);
