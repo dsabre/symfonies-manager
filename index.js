@@ -55,15 +55,16 @@ router.render = (req, res) => {
 		const symfonyProxy = JSON.parse(fs.readFileSync(process.env.PROXY_FILE_PATH, "utf8"));
 		
 		res.locals.data = Object.keys(symfonyProxy.domains).map(symfony => {
-			const saved          = _.find(res.locals.data, {symfony: symfony});
-			const useHttps       = saved ? saved.useHttps : false;
-			const directory      = symfonyProxy.domains[symfony];
-			const startCommand   = Buffer.from(`symfony server:start --daemon --dir=${directory}`).toString('base64');
-			const stopCommand    = Buffer.from(`symfony server:stop --dir=${directory}`).toString('base64');
-			const detachCommand  = Buffer.from(`symfony proxy:domain:detach ${symfony}`).toString('base64');
-			const openDirCommand = Buffer.from(`nautilus ${directory} &`).toString('base64');
-			const statusInfo     = execSync(`symfony local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
-			const running        = statusInfo.includes('Listening on');
+			const saved               = _.find(res.locals.data, {symfony: symfony});
+			const useHttps            = saved ? saved.useHttps : false;
+			const directory           = symfonyProxy.domains[symfony];
+			const startCommand        = Buffer.from(`symfony server:start --daemon --dir=${directory}`).toString('base64');
+			const stopCommand         = Buffer.from(`symfony server:stop --dir=${directory}`).toString('base64');
+			const detachCommand       = Buffer.from(`symfony proxy:domain:detach ${symfony}`).toString('base64');
+			const openDirCommand      = Buffer.from(process.env.OPEN_DIR_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64');
+			const openTerminalCommand = Buffer.from(process.env.OPEN_TERMINAL_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64');
+			const statusInfo          = execSync(`symfony local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
+			const running             = statusInfo.includes('Listening on');
 			
 			let pid = null;
 			if (running) {
@@ -81,10 +82,11 @@ router.render = (req, res) => {
 				id:        saved ? saved.id : 0,
 				favourite: saved ? saved.favourite : false,
 				commands:  {
-					start:   `${serverUrl}/execSync/${startCommand}`,
-					stop:    `${serverUrl}/execSync/${stopCommand}`,
-					openDir: `${serverUrl}/exec/${openDirCommand}`,
-					detach:  `${serverUrl}/execSync/${detachCommand}`,
+					start:        `${serverUrl}/execSync/${startCommand}`,
+					stop:         `${serverUrl}/execSync/${stopCommand}`,
+					openDir:      `${serverUrl}/exec/${openDirCommand}`,
+					openTerminal: `${serverUrl}/exec/${openTerminalCommand}`,
+					detach:       `${serverUrl}/execSync/${detachCommand}`,
 				}
 			};
 		});

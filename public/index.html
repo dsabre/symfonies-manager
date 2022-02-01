@@ -94,12 +94,28 @@
 					</td>
 					<td>{{symfony.symfony}}</td>
 					<td>
-						<a href="#"
-						   @click="runCommand(symfony, 'openDir', $event)"
-						   class="text-light"
-						>
-							{{symfony.directory}}
-						</a>
+						<small>{{symfony.directory}}</small>
+
+						<div>
+							<button type="button"
+									class="btn btn-sm btn-light"
+									@click="runCommand(symfony, 'openDir', $event)"
+									data-tooltip="true"
+									data-bs-placement="left"
+									title="Click to open directory"
+							>
+								<i class="far fa-folder-open"></i>
+							</button>
+							<button type="button"
+									class="btn btn-sm btn-light"
+									@click="runCommand(symfony, 'openTerminal', $event)"
+									data-tooltip="true"
+									data-bs-placement="right"
+									title="Click to open terminal"
+							>
+								<i class="fas fa-terminal"></i>
+							</button>
+						</div>
 					</td>
 					<td class="text-center">
 						<span v-show="symfony.running"
@@ -172,6 +188,9 @@
 								   data-bs-toggle="modal"
 								   data-bs-target="#deleteShortcutModal"
 								   @click="deleteShortcutInfo.symfony = symfony;deleteShortcutInfo.shortcut = shortcut"
+								   data-tooltip="true"
+								   data-bs-placement="left"
+								   :title="`Delete ${shortcut} shortcut`"
 								>
 									<i class="fas fa-times-circle text-danger"></i>
 								</a>
@@ -181,12 +200,13 @@
 							</li>
 							<li>
 								<a href="#"
-								   class="text-decoration-none"
+								   class="text-decoration-none text-info"
 								   data-bs-toggle="modal"
 								   data-bs-target="#addShortcutModal"
 								   @click="addShortcutInfo.symfony = symfony"
 								>
-									<i class="fas fa-plus-circle text-success"></i>
+									<i class="fas fa-plus-circle"></i>
+									Add shortcut
 								</a>
 							</li>
 						</ul>

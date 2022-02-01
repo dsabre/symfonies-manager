@@ -7,18 +7,22 @@ const {execSync}          = require("child_process");
 const symfonyMajorVersion = parseInt(execSync('symfony -V |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"').toString().trim().match(/(\d+\.\d+\.\d+)/)[1].trim().split('.')[0].trim());
 
 const defaults = {
-	PORT:            7079,
-	PROXY_FILE_PATH: `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
-	START_PROXY:     true
+	PORT:                  7079,
+	PROXY_FILE_PATH:       `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
+	START_PROXY:           true,
+	OPEN_DIR_COMMAND:      'nautilus %DIR%',
+	OPEN_TERMINAL_COMMAND: 'gnome-terminal --working-directory=%DIR%'
 };
 
 // load current .env config file if exists
 if (fs.existsSync(envFilepath)) {
 	require('dotenv').config();
 	
-	defaults.PORT            = parseInt(process.env.PORT);
-	defaults.PROXY_FILE_PATH = process.env.PROXY_FILE_PATH.trim();
-	defaults.START_PROXY     = process.env.START_PROXY.trim() === 'true';
+	defaults.PORT                  = parseInt(process.env.PORT);
+	defaults.PROXY_FILE_PATH       = process.env.PROXY_FILE_PATH.trim();
+	defaults.START_PROXY           = process.env.START_PROXY.trim() === 'true';
+	defaults.OPEN_DIR_COMMAND      = process.env.OPEN_DIR_COMMAND.trim();
+	defaults.OPEN_TERMINAL_COMMAND = process.env.OPEN_TERMINAL_COMMAND.trim();
 }
 
 // prepare questions
@@ -34,7 +38,7 @@ const questions = [
 			}
 			
 			return 'Please enter a valid port number';
-		},
+		}
 	},
 	{
 		type:    'input',
@@ -47,6 +51,32 @@ const questions = [
 		name:    'START_PROXY',
 		message: 'Do you want to start Symfony proxy automatically on this manager start?',
 		default: defaults.START_PROXY,
+	},
+	{
+		type:    'input',
+		name:    'OPEN_DIR_COMMAND',
+		message: 'Command to open directory:',
+		default: defaults.OPEN_DIR_COMMAND,
+		validate(value) {
+			if (value.trim().includes('%DIR%')) {
+				return true;
+			}
+			
+			return 'Please include in your command the \'%DIR%\' variable';
+		}
+	},
+	{
+		type:    'input',
+		name:    'OPEN_TERMINAL_COMMAND',
+		message: 'Command to open terminal:',
+		default: defaults.OPEN_TERMINAL_COMMAND,
+		validate(value) {
+			if (value.trim().includes('%DIR%')) {
+				return true;
+			}
+			
+			return 'Please include in your command the \'%DIR%\' variable';
+		}
 	}
 ];
 
@@ -54,7 +84,7 @@ inquirer.prompt(questions).then(answers => {
 	const config = [];
 	
 	Object.keys(answers).forEach(key => {
-		config.push([key, answers[key]].join('='));
+		config.push([key, `"${answers[key]}"`].join('='));
 	});
 	
 	// write .env file
