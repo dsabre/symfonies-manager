@@ -3,7 +3,10 @@
 # set log file
 LOG=/tmp/symfonies_manager_log
 
-echo "Symfonies manager started at: $(date)" > $LOG
+# go to correct directory
+cd "$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> $LOG && pwd )" || exit 1
+
+echo "Symfonies manager started at: $(date)" >> $LOG
 
 # using nvm maybe the path must be set to PATH variable
 NODE_VERSION=$(find /home/"$(whoami)"/.nvm/versions/node -mindepth 1 -maxdepth 1 -type d -exec basename "{}" \; |tail -n1)
