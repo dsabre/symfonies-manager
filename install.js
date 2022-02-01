@@ -58,7 +58,7 @@ const questions = [
 		message: 'Command to open directory:',
 		default: defaults.OPEN_DIR_COMMAND,
 		validate(value) {
-			if (value.trim().includes('%DIR%')) {
+			if (value.trim() === '' || value.trim().includes('%DIR%')) {
 				return true;
 			}
 			
@@ -71,7 +71,7 @@ const questions = [
 		message: 'Command to open terminal:',
 		default: defaults.OPEN_TERMINAL_COMMAND,
 		validate(value) {
-			if (value.trim().includes('%DIR%')) {
+			if (value.trim() === '' || value.trim().includes('%DIR%')) {
 				return true;
 			}
 			
@@ -84,7 +84,7 @@ inquirer.prompt(questions).then(answers => {
 	const config = [];
 	
 	Object.keys(answers).forEach(key => {
-		config.push([key, `"${answers[key]}"`].join('='));
+		config.push([key, `"${typeof answers[key] === 'string' ? answers[key].trim() : answers[key]}"`].join('='));
 	});
 	
 	// write .env file

@@ -61,8 +61,8 @@ router.render = (req, res) => {
 			const startCommand        = Buffer.from(`symfony server:start --daemon --dir=${directory}`).toString('base64');
 			const stopCommand         = Buffer.from(`symfony server:stop --dir=${directory}`).toString('base64');
 			const detachCommand       = Buffer.from(`symfony proxy:domain:detach ${symfony}`).toString('base64');
-			const openDirCommand      = Buffer.from(process.env.OPEN_DIR_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64');
-			const openTerminalCommand = Buffer.from(process.env.OPEN_TERMINAL_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64');
+			const openDirCommand      = process.env.OPEN_DIR_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_DIR_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
+			const openTerminalCommand = process.env.OPEN_TERMINAL_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_TERMINAL_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
 			const statusInfo          = execSync(`symfony local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
 			const running             = statusInfo.includes('Listening on');
 			
@@ -71,23 +71,29 @@ router.render = (req, res) => {
 				pid = parseInt(statusInfo.split('\n').map(s => s.trim()).filter(s => s.includes('PID'))[0].match(/PID (\d+)/)[1].trim());
 			}
 			
+			const commands = {
+				start:        `${serverUrl}/execSync/${startCommand}`,
+				stop:         `${serverUrl}/execSync/${stopCommand}`,
+				detach:       `${serverUrl}/execSync/${detachCommand}`
+			};
+			if (openDirCommand) {
+				commands.openDir = `${serverUrl}/exec/${openDirCommand}`;
+			}
+			if (openTerminalCommand) {
+				commands.openTerminal = `${serverUrl}/exec/${openTerminalCommand}`;
+			}
+			
 			return {
 				symfony:   symfony,
 				useHttps,
 				directory,
 				running,
 				pid,
+				commands,
 				url:       `http${useHttps ? 's' : ''}://${symfony}.${symfonyProxy.tld}`,
 				shortcuts: saved ? saved.shortcuts : [],
 				id:        saved ? saved.id : 0,
 				favourite: saved ? saved.favourite : false,
-				commands:  {
-					start:        `${serverUrl}/execSync/${startCommand}`,
-					stop:         `${serverUrl}/execSync/${stopCommand}`,
-					openDir:      `${serverUrl}/exec/${openDirCommand}`,
-					openTerminal: `${serverUrl}/exec/${openTerminalCommand}`,
-					detach:       `${serverUrl}/execSync/${detachCommand}`,
-				}
 			};
 		});
 	} else if (req.method === 'GET' && /^\/execSync\/.+$/.test(req._parsedOriginalUrl.pathname)) {
