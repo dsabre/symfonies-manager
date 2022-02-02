@@ -11,9 +11,9 @@
 		  crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
 	<style>
-		.cursor-pointer{
-			cursor: pointer;
-		}
+        .cursor-pointer {
+            cursor: pointer;
+        }
 	</style>
 
 	<title>Symfonies manager</title>
@@ -21,6 +21,8 @@
 <body class="bg-dark">
 
 <div id="app">
+	<div :class="{'bg-dark opacity-50 position-absolute top-0 bottom-0 start-0 end-0': true, 'd-none': !loading}"></div>
+
 	<nav class="navbar navbar-expand-lg navbar-light bg-secondary mb-3">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="/">
@@ -100,7 +102,7 @@
 							<button v-if="typeof symfony.commands.openDir !== 'undefined'"
 									type="button"
 									class="btn btn-sm btn-light"
-									@click="runCommand(symfony, 'openDir', $event)"
+									@click="runCommand(symfony, 'openDir', $event, false)"
 									data-tooltip="true"
 									data-bs-placement="left"
 									title="Click to open directory"
@@ -110,7 +112,7 @@
 							<button v-if="typeof symfony.commands.openTerminal !== 'undefined'"
 									type="button"
 									class="btn btn-sm btn-light"
-									@click="runCommand(symfony, 'openTerminal', $event)"
+									@click="runCommand(symfony, 'openTerminal', $event, false)"
 									data-tooltip="true"
 									data-bs-placement="right"
 									title="Click to open terminal"
@@ -140,7 +142,7 @@
 						<a v-show="!symfony.running"
 						   href="#"
 						   class="btn btn-sm btn-success shadow-none"
-						   @click="runCommand(symfony, 'start', $event)"
+						   @click="runCommand(symfony, 'start', $event, true)"
 						   data-tooltip="true"
 						   data-bs-placement="left"
 						   :title="`Start ${symfony.symfony}`"
@@ -150,7 +152,7 @@
 						<a v-show="symfony.running"
 						   href="#"
 						   class="btn btn-sm btn-warning shadow-none"
-						   @click="runCommand(symfony, 'stop', $event)"
+						   @click="runCommand(symfony, 'stop', $event, true)"
 						   data-tooltip="true"
 						   data-bs-placement="top"
 						   :title="`Stop ${symfony.symfony}`"
@@ -389,6 +391,7 @@
 	new Vue({
 		el:       '#app',
 		data:     {
+			loading:            false,
 			symfoniesAll:       [],
 			addSymfonyInfo:     {
 				name:  '',
@@ -433,6 +436,8 @@
 						});
 						this.sortSymfonies();
 
+						this.loading = false;
+
 						// enable tooltips
 						// setTimeout(() => {
 						// 	const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
@@ -448,14 +453,20 @@
 			sortSymfonies:   function () {
 				this.symfoniesAll = _.orderBy(this.symfoniesAll, ['running', 'favourite', 'symfony'], ['desc', 'desc', 'asc']);
 			},
-			runCommand:      function (symfony, command, event) {
+			runCommand:      function (symfony, command, event, showLoading) {
 				event.preventDefault();
 
-				const xmlHttp = new XMLHttpRequest();
-				xmlHttp.open("GET", symfony.commands[command], false);
-				xmlHttp.send(null);
+				if (showLoading) {
+					this.loading = true;
+				}
 
-				this.load();
+				setTimeout(() => {
+					const xmlHttp = new XMLHttpRequest();
+					xmlHttp.open("GET", symfony.commands[command], false);
+					xmlHttp.send(null);
+
+					this.load();
+				}, 100);
 			},
 			toggleFavourite: function (symfony, event) {
 				event.preventDefault();
@@ -522,7 +533,7 @@
 			deleteSymfony:   function (event) {
 				event.preventDefault();
 
-				this.runCommand(this.deleteSymfonyInfo, 'detach', event);
+				this.runCommand(this.deleteSymfonyInfo, 'detach', event, false);
 				this.$refs.deleteSymfonyModalClose.click();
 				this.deleteSymfonyInfo = null;
 			},
