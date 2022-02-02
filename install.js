@@ -10,14 +10,14 @@ const defaults = {
 	PORT:                  7079,
 	PROXY_FILE_PATH:       `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
 	START_PROXY:           true,
-	OPEN_DIR_COMMAND:      'nautilus %DIR%',
-	OPEN_TERMINAL_COMMAND: 'gnome-terminal --working-directory=%DIR%'
+	OPEN_DIR_COMMAND:      process.platform === 'linux' ? 'xdg-open %DIR%' : 'open %DIR%',
+	OPEN_TERMINAL_COMMAND: process.platform === 'linux' ? 'gnome-terminal --working-directory=%DIR%' : 'open -a Terminal %DIR%'
 };
 
 // load current .env config file if exists
 if (fs.existsSync(envFilepath)) {
 	require('dotenv').config();
-	
+
 	defaults.PORT                  = parseInt(process.env.PORT);
 	defaults.PROXY_FILE_PATH       = process.env.PROXY_FILE_PATH.trim();
 	defaults.START_PROXY           = process.env.START_PROXY.trim() === 'true';
@@ -36,7 +36,7 @@ const questions = [
 			if ((value + '').match(/^[\d]+$/)) {
 				return true;
 			}
-			
+
 			return 'Please enter a valid port number';
 		}
 	},
@@ -61,7 +61,7 @@ const questions = [
 			if (value.trim() === '' || value.trim().includes('%DIR%')) {
 				return true;
 			}
-			
+
 			return 'Please include in your command the \'%DIR%\' variable';
 		}
 	},
@@ -74,7 +74,7 @@ const questions = [
 			if (value.trim() === '' || value.trim().includes('%DIR%')) {
 				return true;
 			}
-			
+
 			return 'Please include in your command the \'%DIR%\' variable';
 		}
 	}
@@ -82,14 +82,14 @@ const questions = [
 
 inquirer.prompt(questions).then(answers => {
 	const config = [];
-	
+
 	Object.keys(answers).forEach(key => {
 		config.push([key, `"${typeof answers[key] === 'string' ? answers[key].trim() : answers[key]}"`].join('='));
 	});
-	
+
 	// write .env file
 	fs.writeFileSync(envFilepath, config.join('\n'));
-	
+
 	// initialize db if not exists
 	if (!fs.existsSync(dbFilepath)) {
 		fs.writeFileSync(dbFilepath, JSON.stringify({symfonies: []}));
