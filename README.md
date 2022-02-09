@@ -12,7 +12,7 @@ cd symfonies-manager
 ./run.sh
 ```
 
-Then simply go to http://localhost:3999 (if you have changed the port with the command above then you must se the correct port here)
+Then simply go to http://localhost:7079 (if you have changed the port with the command above then you must se the correct port here)
 
 
 ## Contributing
