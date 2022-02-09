@@ -36,14 +36,44 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item">
+					<li class="nav-item border-end border-dark me-2">
 						<a class="nav-link" href="http://127.0.0.1:7080/" target="_blank">
 							<i class="fas fa-external-link-alt"></i>
 							View proxy page
+							<i class="fa fa-circle text-success rounded-circle border border-dark"
+							   v-show="proxyStatus"
+							   data-tooltip="true"
+							   data-bs-placement="bottom"
+							   title="Proxy is running"
+							></i>
+							<i class="fa fa-circle text-danger rounded-circle border border-dark"
+							   v-show="!proxyStatus"
+							   data-tooltip="true"
+							   data-bs-placement="bottom"
+							   title="Proxy is stopped"
+							></i>
 						</a>
 					</li>
+					<li class="nav-item me-2">
+						<div class="btn-group" role="group" aria-label="Basic example">
+							<a class="nav-link btn btn-primary border border-dark text-light shadow-none"
+							   href="#"
+							   @click="manageProxy($event, 'start')"
+							>
+								<i class="fas fa-play"></i>
+								Start proxy
+							</a>
+							<a class="nav-link btn btn-danger border border-dark text-light shadow-none"
+							   href="#"
+							   @click="manageProxy($event, 'stop')"
+							>
+								<i class="fas fa-stop"></i>
+								Stop proxy
+							</a>
+						</div>
+					</li>
 					<li class="nav-item">
-						<a class="nav-link btn btn-success border border-dark text-light"
+						<a class="nav-link btn btn-success border border-dark text-light shadow-none"
 						   href="#"
 						   data-bs-toggle="modal"
 						   data-bs-target="#addSimfonyModal"
@@ -407,7 +437,8 @@
 				shortcut: ''
 			},
 			deleteSymfonyInfo:  null,
-			search:             ''
+			search:             '',
+			proxyStatus:        false
 		},
 		computed: {
 			symfonies: function () {
@@ -423,9 +454,10 @@
 		},
 		mounted() {
 			this.load();
+			this.getProxyStatus();
 		},
 		methods: {
-			load:            function () {
+			load:                  function () {
 				const xmlHttp              = new XMLHttpRequest();
 				xmlHttp.onreadystatechange = () => {
 					if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
@@ -439,21 +471,34 @@
 						this.loading = false;
 
 						// enable tooltips
-						// setTimeout(() => {
-						// 	const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
-						// 	tooltipTriggerList.map(function (tooltipTriggerEl) {
-						// 		return new bootstrap.Tooltip(tooltipTriggerEl);
-						// 	});
-						// }, 1000);
+						this.doTooltips();
 					}
 				}
 				xmlHttp.open("GET", '/symfonies', true);
 				xmlHttp.send(null);
 			},
-			sortSymfonies:   function () {
+			doTooltips:            function () {
+				// setTimeout(() => {
+				// 	const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-tooltip="true"]'));
+				// 	tooltipTriggerList.map(function (tooltipTriggerEl) {
+				// 		return new bootstrap.Tooltip(tooltipTriggerEl);
+				// 	});
+				// }, 1000);
+			},
+			getProxyStatus:        function () {
+				const xmlHttp              = new XMLHttpRequest();
+				xmlHttp.onreadystatechange = () => {
+					if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+						this.proxyStatus = JSON.parse(xmlHttp.responseText);
+					}
+				}
+				xmlHttp.open("GET", '/proxy-status', true);
+				xmlHttp.send(null);
+			},
+			sortSymfonies:         function () {
 				this.symfoniesAll = _.orderBy(this.symfoniesAll, ['running', 'favourite', 'symfony'], ['desc', 'desc', 'asc']);
 			},
-			runCommand:      function (symfony, command, event, showLoading) {
+			runCommand:            function (symfony, command, event, showLoading) {
 				event.preventDefault();
 
 				if (showLoading) {
@@ -461,14 +506,19 @@
 				}
 
 				setTimeout(() => {
-					const xmlHttp = new XMLHttpRequest();
+					const xmlHttp              = new XMLHttpRequest();
+					xmlHttp.onreadystatechange = () => {
+						if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+							this.doTooltips();
+						}
+					}
 					xmlHttp.open("GET", symfony.commands[command], false);
 					xmlHttp.send(null);
 
 					this.load();
 				}, 100);
 			},
-			toggleFavourite: function (symfony, event) {
+			toggleFavourite:       function (symfony, event) {
 				event.preventDefault();
 
 				const xhr           = new XMLHttpRequest();
@@ -504,7 +554,7 @@
 					xhr.send(data);
 				}
 			},
-			addSymfony:      function (event) {
+			addSymfony:            function (event) {
 				event.preventDefault();
 
 				const name = this.addSymfonyInfo.name.trim();
@@ -530,14 +580,33 @@
 					this.addSymfonyInfo.error = 'Symfony already present';
 				}
 			},
-			deleteSymfony:   function (event) {
+			manageProxy:           function (event, operation) {
+				event.preventDefault();
+
+				this.loading = true;
+
+				const command = btoa(`symfony proxy:${operation}`);
+				const url     = `/execSync/${command}`;
+
+				const xmlHttp              = new XMLHttpRequest();
+				xmlHttp.onreadystatechange = () => {
+					if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+						this.getProxyStatus();
+						this.loading = false;
+						alert(`${this.capitalizeFirstLetter(operation)} OK`);
+					}
+				}
+				xmlHttp.open("GET", url, true);
+				xmlHttp.send(null);
+			},
+			deleteSymfony:         function (event) {
 				event.preventDefault();
 
 				this.runCommand(this.deleteSymfonyInfo, 'detach', event, false);
 				this.$refs.deleteSymfonyModalClose.click();
 				this.deleteSymfonyInfo = null;
 			},
-			addShortcut:     function (event) {
+			addShortcut:           function (event) {
 				event.preventDefault();
 
 				const shortcut      = '/' + _.trimStart(this.addShortcutInfo.shortcut, '/');
@@ -580,7 +649,7 @@
 					xhr.send(data);
 				}
 			},
-			deleteShortcut:  function (event) {
+			deleteShortcut:        function (event) {
 				event.preventDefault();
 
 				const xhr           = new XMLHttpRequest();
@@ -606,7 +675,7 @@
 				xhr.setRequestHeader("Content-Type", "application/json");
 				xhr.send(data);
 			},
-			toggleHttps:     function (symfony, event) {
+			toggleHttps:           function (symfony, event) {
 				event.preventDefault();
 
 				const xhr           = new XMLHttpRequest();
@@ -641,6 +710,9 @@
 					xhr.setRequestHeader("Content-Type", "application/json");
 					xhr.send(data);
 				}
+			},
+			capitalizeFirstLetter: function (string) {
+				return string.charAt(0).toUpperCase() + string.slice(1);
 			}
 		}
 	})

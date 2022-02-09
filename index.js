@@ -113,6 +113,12 @@ router.render = (req, res) => {
 		
 		res.statusCode = 200;
 	}
+	else if (req.method === 'GET' && /^\/proxy-status$/.test(req._parsedOriginalUrl.pathname)) {
+		const response = parseInt(execSync('symfony proxy:status |grep Listening |wc -l').toString().trim());
+		
+		res.locals.data = response > 0;
+		res.statusCode = 200;
+	}
 	
 	console.log(`${(new Date()).toISOString()} - ${req.method} ${req.url} - ${res.statusCode}`);
 	
