@@ -14,6 +14,10 @@
         .cursor-pointer {
             cursor: pointer;
         }
+
+        .cursor-default {
+            cursor: default;
+        }
 	</style>
 
 	<title>Symfonies manager</title>
@@ -162,7 +166,7 @@
 							PID: {{symfony.pid}}
 						</span>
 						<span v-show="!symfony.running"
-							  class="badge rounded-pill bg-secondary"
+							  class="badge rounded-pill bg-secondary cursor-default"
 							  @click="navigator.clipboard.writeText(symfony.pid)"
 						>
 							Off
