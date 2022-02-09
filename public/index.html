@@ -81,6 +81,7 @@
 						   href="#"
 						   data-bs-toggle="modal"
 						   data-bs-target="#addSimfonyModal"
+						   @click="openSimfonyModal"
 						>
 							<i class="fas fa-plus"></i>
 							Add Symfony
@@ -246,7 +247,7 @@
 								   class="text-decoration-none text-info"
 								   data-bs-toggle="modal"
 								   data-bs-target="#addShortcutModal"
-								   @click="addShortcutInfo.symfony = symfony"
+								   @click="openShortcutModal(symfony)"
 								>
 									<i class="fas fa-plus-circle"></i>
 									Add shortcut
@@ -279,6 +280,7 @@
 							<input type="text"
 								   class="form-control form-control-lg"
 								   id="addSymfonyName"
+								   ref="addSymfonyName"
 								   placeholder="Name *"
 								   v-model="addSymfonyInfo.name"
 								   required
@@ -329,6 +331,7 @@
 							<input type="text"
 								   class="form-control form-control-lg"
 								   id="shortcut"
+								   ref="shortcut"
 								   placeholder="Shortcut *"
 								   v-model="addShortcutInfo.shortcut"
 								   required
@@ -714,6 +717,17 @@
 					xhr.setRequestHeader("Content-Type", "application/json");
 					xhr.send(data);
 				}
+			},
+			openShortcutModal:     function (symfony) {
+				this.addShortcutInfo.symfony = symfony;
+				setTimeout(() => {
+					this.$refs.shortcut.focus();
+				}, 500);
+			},
+			openSimfonyModal:      function () {
+				setTimeout(() => {
+					this.$refs.addSymfonyName.focus();
+				}, 500);
 			},
 			capitalizeFirstLetter: function (string) {
 				return string.charAt(0).toUpperCase() + string.slice(1);
