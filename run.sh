@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sleep 10
+
 # set log file
 LOG=/tmp/symfonies_manager_log
 
