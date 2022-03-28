@@ -68,7 +68,11 @@ router.render = (req, res) => {
 			
 			let pid = null;
 			if (running) {
-				pid = parseInt(statusInfo.split('\n').map(s => s.trim()).filter(s => s.includes('PID'))[0].match(/PID (\d+)/)[1].trim());
+				try {
+					pid = parseInt(statusInfo.split('\n').map(s => s.trim()).filter(s => s.includes('PID'))[0].match(/PID (\d+)/)[1].trim());
+				} catch (e) {
+					pid = 'error';
+				}
 			}
 			
 			const commands = {

@@ -157,12 +157,17 @@
 						</div>
 					</td>
 					<td class="text-center">
-						<span v-show="symfony.running"
+						<span v-show="symfony.running && symfony.pid !== 'error'"
 							  class="badge rounded-pill bg-success cursor-pointer"
 							  @click="navigator.clipboard.writeText(symfony.pid)"
 							  data-tooltip="true"
 							  data-bs-placement="top"
 							  title="Click to copy PID to clipboard"
+						>
+							PID: {{symfony.pid}}
+						</span>
+						<span v-show="symfony.running && symfony.pid === 'error'"
+							  class="badge rounded-pill bg-danger cursor-pointer"
 						>
 							PID: {{symfony.pid}}
 						</span>
