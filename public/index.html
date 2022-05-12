@@ -135,9 +135,9 @@
 					</td>
 					<td>{{symfony.symfony}}</td>
 					<td>
-						<small>{{symfony.directory}}</small>
+						<small class="d-block">{{symfony.directory}}</small>
 
-						<div>
+						<div class="btn-group" role="group">
 							<button v-if="typeof symfony.commands.openDir !== 'undefined'"
 									type="button"
 									class="btn btn-sm btn-light"
@@ -183,45 +183,47 @@
 						</span>
 					</td>
 					<td class="text-center">
-						<a v-show="!symfony.running"
-						   href="#"
-						   class="btn btn-sm btn-success shadow-none"
-						   @click="runCommand(symfony, 'start', $event, true)"
-						   data-tooltip="true"
-						   data-bs-placement="left"
-						   :title="`Start ${symfony.symfony}`"
-						>
-							<i class="fa-solid fa-play"></i>
-						</a>
-						<a v-show="symfony.running"
-						   href="#"
-						   class="btn btn-sm btn-warning shadow-none"
-						   @click="runCommand(symfony, 'stop', $event, true)"
-						   data-tooltip="true"
-						   data-bs-placement="top"
-						   :title="`Stop ${symfony.symfony}`"
-						>
-							<i class="fa-solid fa-stop"></i>
-						</a>
-						<a href="#"
-						   class="btn btn-sm btn-secondary shadow-none"
-						   data-tooltip="true"
-						   data-bs-placement="top"
-						   :title="`Https ${symfony.useHttps ? 'enabled, click to disable it' : 'disabled, click to enable it'}`"
-						   @click="toggleHttps(symfony, $event)"
-						>
-							<i :class="{'fa-solid fa-shield': true, 'text-warning': !symfony.useHttps, 'text-info': symfony.useHttps}"></i>
-						</a>
-						<a v-show="!symfony.running"
-						   href="#"
-						   class="btn btn-sm btn-orange shadow-none"
-						   data-tooltip="true"
-						   data-bs-placement="top"
-						   :title="`Archive ${symfony.symfony}`"
-						   @click="toggleArchive(symfony, $event)"
-						>
-							<i class="fa-solid fa-box"></i>
-						</a>
+						<div class="btn-group" role="group">
+							<a v-if="!symfony.running"
+							   href="#"
+							   class="btn btn-sm btn-success shadow-none"
+							   @click="runCommand(symfony, 'start', $event, true)"
+							   data-tooltip="true"
+							   data-bs-placement="left"
+							   :title="`Start ${symfony.symfony}`"
+							>
+								<i class="fa-solid fa-play"></i>
+							</a>
+							<a v-if="symfony.running"
+							   href="#"
+							   class="btn btn-sm btn-warning shadow-none"
+							   @click="runCommand(symfony, 'stop', $event, true)"
+							   data-tooltip="true"
+							   data-bs-placement="left"
+							   :title="`Stop ${symfony.symfony}`"
+							>
+								<i class="fa-solid fa-stop"></i>
+							</a>
+							<a href="#"
+							   class="btn btn-sm btn-secondary shadow-none"
+							   data-tooltip="true"
+							   data-bs-placement="top"
+							   :title="`Https ${symfony.useHttps ? 'enabled, click to disable it' : 'disabled, click to enable it'}`"
+							   @click="toggleHttps(symfony, $event)"
+							>
+								<i :class="{'fa-solid fa-shield': true, 'text-warning': !symfony.useHttps, 'text-info': symfony.useHttps}"></i>
+							</a>
+							<a v-if="!symfony.running"
+							   href="#"
+							   class="btn btn-sm btn-orange shadow-none"
+							   data-tooltip="true"
+							   data-bs-placement="top"
+							   :title="`Archive ${symfony.symfony}`"
+							   @click="toggleArchive(symfony, $event)"
+							>
+								<i class="fa-solid fa-box"></i>
+							</a>
+						</div>
 					</td>
 					<td>
 						<ul class="list-unstyled m-0">
@@ -302,9 +304,9 @@
 							</td>
 							<td>{{symfony.symfony}}</td>
 							<td>
-								<small>{{symfony.directory}}</small>
+								<small class="d-block">{{symfony.directory}}</small>
 
-								<div>
+								<div class="btn-group" role="group">
 									<button v-if="typeof symfony.commands.openDir !== 'undefined'"
 											type="button"
 											class="btn btn-sm btn-light"
@@ -328,26 +330,28 @@
 								</div>
 							</td>
 							<td class="text-center">
-								<a href="#"
-								   class="btn btn-sm btn-orange shadow-none"
-								   data-tooltip="true"
-								   data-bs-placement="top"
-								   :title="`Restore ${symfony.symfony}`"
-								   @click="toggleArchive(symfony, $event)"
-								>
-									<i class="fa-solid fa-box-open"></i>
-								</a>
-								<a href="#"
-								   class="btn btn-sm btn-danger shadow-none"
-								   data-bs-toggle="modal"
-								   data-bs-target="#deleteSymfonyModal"
-								   @click="deleteSymfonyInfo = symfony"
-								   data-tooltip="true"
-								   data-bs-placement="right"
-								   :title="`Detach ${symfony.symfony}`"
-								>
-									<i class="fa-solid fa-trash"></i>
-								</a>
+								<div class="btn-group" role="group">
+									<a href="#"
+									   class="btn btn-sm btn-orange shadow-none"
+									   data-tooltip="true"
+									   data-bs-placement="top"
+									   :title="`Restore ${symfony.symfony}`"
+									   @click="toggleArchive(symfony, $event)"
+									>
+										<i class="fa-solid fa-box-open"></i>
+									</a>
+									<a href="#"
+									   class="btn btn-sm btn-danger shadow-none"
+									   data-bs-toggle="modal"
+									   data-bs-target="#deleteSymfonyModal"
+									   @click="deleteSymfonyInfo = symfony"
+									   data-tooltip="true"
+									   data-bs-placement="right"
+									   :title="`Detach ${symfony.symfony}`"
+									>
+										<i class="fa-solid fa-trash"></i>
+									</a>
+								</div>
 							</td>
 							<td>
 								<ul class="list-unstyled m-0">
