@@ -6,9 +6,7 @@
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
 		  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-		  integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
-		  crossorigin="anonymous" referrerpolicy="no-referrer"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 	<style>
         .cursor-pointer {
@@ -17,6 +15,12 @@
 
         .cursor-default {
             cursor: default;
+        }
+
+        .btn-orange {
+            color: #fff;
+            background-color: #f97316;
+            border-color: #f97316;
         }
 	</style>
 
@@ -42,15 +46,15 @@
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item border-end border-dark me-2">
 						<a class="nav-link" href="http://127.0.0.1:7080/" target="_blank">
-							<i class="fas fa-external-link-alt"></i>
+							<i class="fa-solid fa-arrow-up-right-from-square"></i>
 							View proxy page
-							<i class="fa fa-circle text-success rounded-circle border border-dark"
+							<i class="fa-solid fa-circle text-success rounded-circle border border-dark"
 							   v-show="proxyStatus"
 							   data-tooltip="true"
 							   data-bs-placement="bottom"
 							   title="Proxy is running"
 							></i>
-							<i class="fa fa-circle text-danger rounded-circle border border-dark"
+							<i class="fa-solid fa-circle text-danger rounded-circle border border-dark"
 							   v-show="!proxyStatus"
 							   data-tooltip="true"
 							   data-bs-placement="bottom"
@@ -64,14 +68,14 @@
 							   href="#"
 							   @click="manageProxy($event, 'start')"
 							>
-								<i class="fas fa-play"></i>
+								<i class="fa-solid fa-play"></i>
 								Start proxy
 							</a>
 							<a class="nav-link btn btn-danger border border-dark text-light shadow-none"
 							   href="#"
 							   @click="manageProxy($event, 'stop')"
 							>
-								<i class="fas fa-stop"></i>
+								<i class="fa-solid fa-stop"></i>
 								Stop proxy
 							</a>
 						</div>
@@ -83,7 +87,7 @@
 						   data-bs-target="#addSimfonyModal"
 						   @click="openSimfonyModal"
 						>
-							<i class="fas fa-plus"></i>
+							<i class="fa-solid fa-plus"></i>
 							Add Symfony
 						</a>
 					</li>
@@ -98,7 +102,7 @@
 							   v-model="search"
 						>
 						<span class="input-group-text bg-white text-secondary border-0" id="addon-wrapping">
-							<i class="fas fa-search"></i>
+							<i class="fa-solid fa-magnifying-glass"></i>
 						</span>
 					</div>
 				</div>
@@ -120,13 +124,13 @@
 				</tr>
 				</thead>
 				<tbody>
-				<tr v-for="symfony in symfonies"
+				<tr v-for="symfony in symfoniesNotArchived"
 					:key="symfony.symfony"
 				>
 					<td class="text-center">
 						<a href="#" class="text-decoration-none" @click="toggleFavourite(symfony, $event)">
-							<i v-show="symfony.favourite" class="fas fa-star text-warning"></i>
-							<i v-show="!symfony.favourite" class="far fa-star text-secondary"></i>
+							<i v-show="symfony.favourite" class="fa-solid fa-star text-warning"></i>
+							<i v-show="!symfony.favourite" class="fa-regular fa-star text-secondary"></i>
 						</a>
 					</td>
 					<td>{{symfony.symfony}}</td>
@@ -142,7 +146,7 @@
 									data-bs-placement="left"
 									title="Click to open directory"
 							>
-								<i class="far fa-folder-open"></i>
+								<i class="fa-regular fa-folder-open"></i>
 							</button>
 							<button v-if="typeof symfony.commands.openTerminal !== 'undefined'"
 									type="button"
@@ -152,7 +156,7 @@
 									data-bs-placement="right"
 									title="Click to open terminal"
 							>
-								<i class="fas fa-terminal"></i>
+								<i class="fa-solid fa-terminal"></i>
 							</button>
 						</div>
 					</td>
@@ -187,7 +191,7 @@
 						   data-bs-placement="left"
 						   :title="`Start ${symfony.symfony}`"
 						>
-							<i class="fas fa-play"></i>
+							<i class="fa-solid fa-play"></i>
 						</a>
 						<a v-show="symfony.running"
 						   href="#"
@@ -197,7 +201,7 @@
 						   data-bs-placement="top"
 						   :title="`Stop ${symfony.symfony}`"
 						>
-							<i class="fas fa-stop"></i>
+							<i class="fa-solid fa-stop"></i>
 						</a>
 						<a href="#"
 						   class="btn btn-sm btn-secondary shadow-none"
@@ -206,25 +210,23 @@
 						   :title="`Https ${symfony.useHttps ? 'enabled, click to disable it' : 'disabled, click to enable it'}`"
 						   @click="toggleHttps(symfony, $event)"
 						>
-							<i :class="{'fas fa-shield-alt': true, 'text-warning': !symfony.useHttps, 'text-info': symfony.useHttps}"></i>
+							<i :class="{'fa-solid fa-shield': true, 'text-warning': !symfony.useHttps, 'text-info': symfony.useHttps}"></i>
 						</a>
 						<a v-show="!symfony.running"
 						   href="#"
-						   class="btn btn-sm btn-danger shadow-none"
-						   data-bs-toggle="modal"
-						   data-bs-target="#deleteSymfonyModal"
-						   @click="deleteSymfonyInfo = symfony"
+						   class="btn btn-sm btn-orange shadow-none"
 						   data-tooltip="true"
-						   data-bs-placement="right"
-						   :title="`Detach ${symfony.symfony}`"
+						   data-bs-placement="top"
+						   :title="`Archive ${symfony.symfony}`"
+						   @click="toggleArchive(symfony, $event)"
 						>
-							<i class="fas fa-trash"></i>
+							<i class="fa-solid fa-box"></i>
 						</a>
 					</td>
 					<td>
 						<ul class="list-unstyled m-0">
 							<li>
-								<i class="fas fa-times-circle text-secondary"></i>
+								<i class="fa-solid fa-circle-xmark text-secondary"></i>
 								<a :href="symfony.url" target="_blank" class="text-light">
 									{{symfony.url}}
 								</a>
@@ -241,7 +243,7 @@
 								   data-bs-placement="left"
 								   :title="`Delete ${shortcut} shortcut`"
 								>
-									<i class="fas fa-times-circle text-danger"></i>
+									<i class="fa-solid fa-circle-xmark text-danger"></i>
 								</a>
 								<a :href="symfony.url + shortcut" target="_blank" class="text-light">
 									{{symfony.url}}{{shortcut}}
@@ -254,7 +256,7 @@
 								   data-bs-target="#addShortcutModal"
 								   @click="openShortcutModal(symfony)"
 								>
-									<i class="fas fa-plus-circle"></i>
+									<i class="fa-solid fa-circle-plus"></i>
 									Add shortcut
 								</a>
 							</li>
@@ -263,6 +265,134 @@
 				</tr>
 				</tbody>
 			</table>
+		</div>
+
+		<div v-if="symfoniesArchived.length > 0">
+			<hr class="bg-light">
+
+			<fieldset>
+				<legend class="text-light cursor-pointer"
+						@click="archiveExpanded = !archiveExpanded"
+				>
+					<i class="fa-solid fa-caret-down" v-show="archiveExpanded"></i>
+					<i class="fa-solid fa-caret-right" v-show="!archiveExpanded"></i>
+					Archived symfonies
+				</legend>
+
+				<div class="table-responsive" v-show="archiveExpanded">
+					<table class="table table-hover table-bordered table-striped table-dark align-middle">
+						<thead>
+						<tr>
+							<th scope="col" class="text-center">Favourites</th>
+							<th scope="col">Name</th>
+							<th scope="col">Path</th>
+							<th scope="col" class="text-center">Operations</th>
+							<th scope="col">Links</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr v-for="symfony in symfoniesArchived"
+							:key="symfony.symfony"
+						>
+							<td class="text-center">
+								<a href="#" class="text-decoration-none" @click="toggleFavourite(symfony, $event)">
+									<i v-show="symfony.favourite" class="fa-solid fa-star text-warning"></i>
+									<i v-show="!symfony.favourite" class="fa-regular fa-star text-secondary"></i>
+								</a>
+							</td>
+							<td>{{symfony.symfony}}</td>
+							<td>
+								<small>{{symfony.directory}}</small>
+
+								<div>
+									<button v-if="typeof symfony.commands.openDir !== 'undefined'"
+											type="button"
+											class="btn btn-sm btn-light"
+											@click="runCommand(symfony, 'openDir', $event, false)"
+											data-tooltip="true"
+											data-bs-placement="left"
+											title="Click to open directory"
+									>
+										<i class="fa-regular fa-folder-open"></i>
+									</button>
+									<button v-if="typeof symfony.commands.openTerminal !== 'undefined'"
+											type="button"
+											class="btn btn-sm btn-light"
+											@click="runCommand(symfony, 'openTerminal', $event, false)"
+											data-tooltip="true"
+											data-bs-placement="right"
+											title="Click to open terminal"
+									>
+										<i class="fa-solid fa-terminal"></i>
+									</button>
+								</div>
+							</td>
+							<td class="text-center">
+								<a href="#"
+								   class="btn btn-sm btn-orange shadow-none"
+								   data-tooltip="true"
+								   data-bs-placement="top"
+								   :title="`Restore ${symfony.symfony}`"
+								   @click="toggleArchive(symfony, $event)"
+								>
+									<i class="fa-solid fa-box-open"></i>
+								</a>
+								<a href="#"
+								   class="btn btn-sm btn-danger shadow-none"
+								   data-bs-toggle="modal"
+								   data-bs-target="#deleteSymfonyModal"
+								   @click="deleteSymfonyInfo = symfony"
+								   data-tooltip="true"
+								   data-bs-placement="right"
+								   :title="`Detach ${symfony.symfony}`"
+								>
+									<i class="fa-solid fa-trash"></i>
+								</a>
+							</td>
+							<td>
+								<ul class="list-unstyled m-0">
+									<li>
+										<i class="fa-solid fa-circle-xmark text-secondary"></i>
+										<a :href="symfony.url" target="_blank" class="text-light">
+											{{symfony.url}}
+										</a>
+									</li>
+									<li v-for="shortcut, k in symfony.shortcuts"
+										:key="btoa(`${symfony.symfony}-shortcut-${k}`)"
+									>
+										<a href="#"
+										   class="text-decoration-none"
+										   data-bs-toggle="modal"
+										   data-bs-target="#deleteShortcutModal"
+										   @click="deleteShortcutInfo.symfony = symfony;deleteShortcutInfo.shortcut = shortcut"
+										   data-tooltip="true"
+										   data-bs-placement="left"
+										   :title="`Delete ${shortcut} shortcut`"
+										>
+											<i class="fa-solid fa-circle-xmark text-danger"></i>
+										</a>
+										<a :href="symfony.url + shortcut" target="_blank" class="text-light">
+											{{symfony.url}}{{shortcut}}
+										</a>
+									</li>
+									<li>
+										<a href="#"
+										   class="text-decoration-none text-info"
+										   data-bs-toggle="modal"
+										   data-bs-target="#addShortcutModal"
+										   @click="openShortcutModal(symfony)"
+										>
+											<i class="fa-solid fa-circle-plus"></i>
+											Add shortcut
+										</a>
+									</li>
+								</ul>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</fieldset>
 		</div>
 	</div>
 
@@ -311,7 +441,7 @@
 							Cancel
 						</button>
 						<button type="submit" class="btn btn-success">
-							<i class="fas fa-plus"></i>
+							<i class="fa-solid fa-plus"></i>
 							Add Symfony
 						</button>
 					</div>
@@ -352,7 +482,7 @@
 							Cancel
 						</button>
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-plus-circle"></i>
+							<i class="fa-solid fa-circle-plus"></i>
 							Add shortcut
 						</button>
 					</div>
@@ -382,7 +512,7 @@
 							Cancel
 						</button>
 						<button type="submit" class="btn btn-danger">
-							<i class="fas fa-trash"></i>
+							<i class="fa-solid fa-trash"></i>
 							Yes, delete it
 						</button>
 					</div>
@@ -413,7 +543,7 @@
 							Cancel
 						</button>
 						<button type="submit" class="btn btn-danger">
-							<i class="fas fa-times-circle"></i>
+							<i class="fa-solid fa-circle-xmark"></i>
 							Yes, delete it
 						</button>
 					</div>
@@ -450,7 +580,8 @@
 			},
 			deleteSymfonyInfo:  null,
 			search:             '',
-			proxyStatus:        false
+			proxyStatus:        false,
+			archiveExpanded:    false
 		},
 		computed: {
 			symfonies: function () {
@@ -463,6 +594,12 @@
 
 				return symfoniesAll;
 			},
+			symfoniesNotArchived: function () {
+				return this.symfonies.filter(s => !s.archived);
+			},
+			symfoniesArchived: function () {
+				return this.symfonies.filter(s => s.archived);
+			}
 		},
 		mounted() {
 			this.load();
@@ -546,6 +683,7 @@
 					const data = JSON.stringify({
 						symfony:   symfony.symfony,
 						shortcuts: [],
+						archived:  false,
 						useHttps:  false,
 						favourite: true
 					});
@@ -557,6 +695,7 @@
 					const data = JSON.stringify({
 						symfony:   symfony.symfony,
 						shortcuts: symfony.shortcuts,
+						archived:  symfony.archived,
 						useHttps:  symfony.useHttps,
 						favourite: !symfony.favourite
 					});
@@ -639,6 +778,7 @@
 						symfony:   this.addShortcutInfo.symfony.symfony,
 						shortcuts: [shortcut],
 						useHttps:  false,
+						archived:  false,
 						favourite: false
 					});
 
@@ -652,6 +792,7 @@
 					const data = JSON.stringify({
 						symfony:   this.addShortcutInfo.symfony.symfony,
 						useHttps:  this.addShortcutInfo.symfony.useHttps,
+						archived:  this.addShortcutInfo.symfony.archived,
 						favourite: this.addShortcutInfo.symfony.favourite,
 						shortcuts: _.uniq(shortcuts)
 					});
@@ -679,6 +820,7 @@
 				const data = JSON.stringify({
 					symfony:   this.deleteShortcutInfo.symfony.symfony,
 					useHttps:  this.deleteShortcutInfo.symfony.useHttps,
+					archived:  this.deleteShortcutInfo.symfony.archived,
 					favourite: this.deleteShortcutInfo.symfony.favourite,
 					shortcuts: _.difference(this.deleteShortcutInfo.symfony.shortcuts, [this.deleteShortcutInfo.shortcut])
 				});
@@ -704,6 +846,7 @@
 						symfony:   symfony.symfony,
 						shortcuts: [],
 						useHttps:  true,
+						archived:  false,
 						favourite: false
 					});
 
@@ -714,6 +857,45 @@
 					const data = JSON.stringify({
 						symfony:   symfony.symfony,
 						useHttps:  !symfony.useHttps,
+						archived:  symfony.archived,
+						favourite: symfony.favourite,
+						shortcuts: symfony.shortcuts
+					});
+
+					xhr.open("PUT", `/symfonies/${symfony.id}`);
+					xhr.setRequestHeader("Content-Type", "application/json");
+					xhr.send(data);
+				}
+			},
+			toggleArchive:           function (symfony, event) {
+				event.preventDefault();
+
+				const xhr           = new XMLHttpRequest();
+				xhr.withCredentials = true;
+
+				xhr.addEventListener("readystatechange", () => {
+					if (xhr.readyState === 4) {
+						this.load();
+					}
+				});
+
+				if (symfony.id === 0) {
+					const data = JSON.stringify({
+						symfony:   symfony.symfony,
+						shortcuts: [],
+						useHttps:  false,
+						archived:  true,
+						favourite: false
+					});
+
+					xhr.open("POST", "/symfonies");
+					xhr.setRequestHeader("Content-Type", "application/json");
+					xhr.send(data);
+				} else {
+					const data = JSON.stringify({
+						symfony:   symfony.symfony,
+						useHttps:  symfony.useHttps,
+						archived:  !symfony.archived,
 						favourite: symfony.favourite,
 						shortcuts: symfony.shortcuts
 					});
@@ -738,7 +920,7 @@
 				return string.charAt(0).toUpperCase() + string.slice(1);
 			}
 		}
-	})
+	});
 </script>
 </body>
 </html>

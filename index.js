@@ -57,6 +57,7 @@ router.render = (req, res) => {
 		res.locals.data = Object.keys(symfonyProxy.domains).map(symfony => {
 			const saved               = _.find(res.locals.data, {symfony: symfony});
 			const useHttps            = saved ? saved.useHttps : false;
+			const archived            = !!(saved ? saved.archived : false);
 			const directory           = symfonyProxy.domains[symfony];
 			const startCommand        = Buffer.from(`symfony server:start --daemon --dir=${directory}`).toString('base64');
 			const stopCommand         = Buffer.from(`symfony server:stop --dir=${directory}`).toString('base64');
@@ -90,6 +91,7 @@ router.render = (req, res) => {
 			return {
 				symfony:   symfony,
 				useHttps,
+				archived,
 				directory,
 				running,
 				pid,
