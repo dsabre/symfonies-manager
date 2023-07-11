@@ -11,7 +11,8 @@ const defaults = {
 	PROXY_FILE_PATH:       `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/proxy.json`,
 	START_PROXY:           true,
 	OPEN_DIR_COMMAND:      process.platform === 'linux' ? 'xdg-open %DIR%' : 'open %DIR%',
-	OPEN_TERMINAL_COMMAND: process.platform === 'linux' ? 'gnome-terminal --working-directory=%DIR%' : 'open -a Terminal %DIR%'
+	OPEN_TERMINAL_COMMAND: process.platform === 'linux' ? 'gnome-terminal --working-directory=%DIR%' : 'open -a Terminal %DIR%',
+	SYMFONY_EXECUTABLE:    `/home/${os.userInfo().username}/.symfony${symfonyMajorVersion > 4 ? symfonyMajorVersion : ''}/bin/symfony`
 };
 
 // load current .env config file if exists
@@ -23,6 +24,7 @@ if (fs.existsSync(envFilepath)) {
 	defaults.START_PROXY           = process.env.START_PROXY.trim() === 'true';
 	defaults.OPEN_DIR_COMMAND      = process.env.OPEN_DIR_COMMAND.trim();
 	defaults.OPEN_TERMINAL_COMMAND = process.env.OPEN_TERMINAL_COMMAND.trim();
+	defaults.SYMFONY_EXECUTABLE    = process.env.SYMFONY_EXECUTABLE.trim();
 }
 
 // prepare questions
@@ -76,6 +78,19 @@ const questions = [
 			}
 
 			return 'Please include in your command the \'%DIR%\' variable';
+		}
+	},
+	{
+		type:    'input',
+		name:    'SYMFONY_EXECUTABLE',
+		message: 'Symfony executable:',
+		default: defaults.SYMFONY_EXECUTABLE,
+		validate(value) {
+			if (value.trim() !== '') {
+				return true;
+			}
+
+			return 'Required value';
 		}
 	}
 ];

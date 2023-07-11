@@ -587,6 +587,9 @@
 			deleteSymfonyInfo:  null,
 			search:             '',
 			proxyStatus:        false,
+			configs:            {
+				symfonyExecutable: ''
+			},
 			archiveExpanded:    false
 		},
 		computed: {
@@ -613,6 +616,10 @@
 		},
 		methods: {
 			load:                  function () {
+				this.getSymfonies();
+				this.getConfigs();
+			},
+			getSymfonies: function(){
 				const xmlHttp              = new XMLHttpRequest();
 				xmlHttp.onreadystatechange = () => {
 					if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
@@ -630,6 +637,16 @@
 					}
 				}
 				xmlHttp.open("GET", '/symfonies', true);
+				xmlHttp.send(null);
+			},
+			getConfigs: function(){
+				const xmlHttp              = new XMLHttpRequest();
+				xmlHttp.onreadystatechange = () => {
+					if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+						this.configs = JSON.parse(xmlHttp.responseText);
+					}
+				}
+				xmlHttp.open("GET", '/configs', true);
 				xmlHttp.send(null);
 			},
 			doTooltips:            function () {
@@ -718,7 +735,7 @@
 				const path = this.addSymfonyInfo.path.trim();
 
 				if (this.symfoniesAll.filter(s => s.symfony === name).length === 0) {
-					const command = btoa(`symfony proxy:domain:attach ${name} --dir=${path}`);
+					const command = btoa(`${this.configs.symfonyExecutable} proxy:domain:attach ${name} --dir=${path}`);
 					const url     = `/execSync/${command}`;
 
 					const xmlHttp              = new XMLHttpRequest();
@@ -742,7 +759,7 @@
 
 				this.loading = true;
 
-				const command = btoa(`symfony proxy:${operation}`);
+				const command = btoa(`${this.configs.symfonyExecutable} proxy:${operation}`);
 				const url     = `/execSync/${command}`;
 
 				const xmlHttp              = new XMLHttpRequest();

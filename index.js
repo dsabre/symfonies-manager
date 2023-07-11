@@ -32,6 +32,7 @@ const middlewares      = jsonServer.defaults({
 	logger: false
 });
 const serverUrl        = `http://localhost:${process.env.PORT}`;
+const symfonyExecutable   = process.env.SYMFONY_EXECUTABLE.trim();
 
 server.use(middlewares);
 server.use(router);
@@ -66,7 +67,7 @@ router.render = (req, res) => {
 			const openTerminalCommand = process.env.OPEN_TERMINAL_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_TERMINAL_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
 			const statusInfo          = execSync(`symfony local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
 			const running             = statusInfo.includes('Listening on');
-			
+
 			let pid = null;
 			if (running) {
 				try {
@@ -102,6 +103,14 @@ router.render = (req, res) => {
 				favourite: saved ? saved.favourite : false,
 			};
 		});
+	}
+	else if (req.method === 'GET' && req._parsedOriginalUrl.pathname === '/configs') {
+		// CONFIG ACTION
+		
+		res.locals.data = {
+			symfonyExecutable
+		};
+		res.statusCode = 200;
 	} else if (req.method === 'GET' && /^\/execSync\/.+$/.test(req._parsedOriginalUrl.pathname)) {
 		// EXEC SYNC ACTION
 		
@@ -120,7 +129,8 @@ router.render = (req, res) => {
 		res.statusCode = 200;
 	}
 	else if (req.method === 'GET' && /^\/proxy-status$/.test(req._parsedOriginalUrl.pathname)) {
-		const response = parseInt(execSync('symfony proxy:status |grep Listening |wc -l').toString().trim());
+
+		const response = parseInt(execSync(`${symfonyExecutable} proxy:status |grep Listening |wc -l`).toString().trim());
 		
 		res.locals.data = response > 0;
 		res.statusCode = 200;
