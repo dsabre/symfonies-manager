@@ -60,12 +60,12 @@ router.render = (req, res) => {
 			const useHttps            = saved ? saved.useHttps : false;
 			const archived            = !!(saved ? saved.archived : false);
 			const directory           = symfonyProxy.domains[symfony];
-			const startCommand        = Buffer.from(`symfony server:start --daemon --dir=${directory}`).toString('base64');
-			const stopCommand         = Buffer.from(`symfony server:stop --dir=${directory}`).toString('base64');
-			const detachCommand       = Buffer.from(`symfony proxy:domain:detach ${symfony}`).toString('base64');
+			const startCommand        = Buffer.from(`${symfonyExecutable} server:start --daemon --dir=${directory}`).toString('base64');
+			const stopCommand         = Buffer.from(`${symfonyExecutable} server:stop --dir=${directory}`).toString('base64');
+			const detachCommand       = Buffer.from(`${symfonyExecutable} proxy:domain:detach ${symfony}`).toString('base64');
 			const openDirCommand      = process.env.OPEN_DIR_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_DIR_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
 			const openTerminalCommand = process.env.OPEN_TERMINAL_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_TERMINAL_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
-			const statusInfo          = execSync(`symfony local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
+			const statusInfo          = execSync(`${symfonyExecutable} local:server:status --dir=${directory} |sed -r "s/\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"`).toString().trim();
 			const running             = statusInfo.includes('Listening on');
 
 			let pid = null;
