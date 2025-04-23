@@ -33,6 +33,7 @@ const middlewares      = jsonServer.defaults({
 });
 const serverUrl        = `http://localhost:${process.env.PORT}`;
 const symfonyExecutable   = process.env.SYMFONY_EXECUTABLE.trim();
+let strCustomVars = '';
 
 server.use(middlewares);
 server.use(router);
@@ -47,6 +48,13 @@ if (process.env.START_PROXY.trim() === 'true') {
 // start json server
 server.listen(process.env.PORT, () => {
 	console.log(`${(new Date()).toISOString()} - JSON Server is running on ${serverUrl}`);
+
+	const prefix = 'CUSTOM_VARS_';
+
+    strCustomVars = Object.entries(process.env)
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([key, value]) => `${key.slice(prefix.length)}=${value}`)
+        .join(' ');
 });
 
 router.render = (req, res) => {
@@ -60,7 +68,7 @@ router.render = (req, res) => {
 			const useHttps            = saved ? saved.useHttps : false;
 			const archived            = !!(saved ? saved.archived : false);
 			const directory           = symfonyProxy.domains[symfony];
-			const startCommand        = Buffer.from(`${symfonyExecutable} server:start --daemon --dir=${directory}`).toString('base64');
+			const startCommand        = Buffer.from(`${strCustomVars} ${symfonyExecutable} server:start --daemon --dir=${directory}`.trim()).toString('base64');
 			const stopCommand         = Buffer.from(`${symfonyExecutable} server:stop --dir=${directory}`).toString('base64');
 			const detachCommand       = Buffer.from(`${symfonyExecutable} proxy:domain:detach ${symfony}`).toString('base64');
 			const openDirCommand      = process.env.OPEN_DIR_COMMAND.trim() !== '' ? Buffer.from(process.env.OPEN_DIR_COMMAND.replace('%DIR%', `"${directory}"`) + ' &').toString('base64') : null;
